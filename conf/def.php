@@ -35,7 +35,7 @@ Def::con('S',DIRECTORY_SEPARATOR);
 Def::con('N',PHP_EOL);
 
 // root directory of library
-Def::con('PQR_LIB',S.'Volumes'.S.'XFS'.S.'dev'.S.'phpstorm'.S.'paqure');
+Def::con('PQR_LIB',substr(__FILE__,0,strlen(__FILE__)-13));
 
 Def::con('TIME_ZONE','America/Denver');
 
