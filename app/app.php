@@ -115,6 +115,31 @@ class AppMdl extends Mdl
 } // ./Application Model
 
 /**
+ * Application View
+ */
+class AppVueCtl extends VueCtl
+{
+
+    /* @property vue object array */
+    // protected $voa = [];
+
+    /**
+     * construct Application View
+     */
+    public function __construct()
+    {
+
+        $dct = new DctVue();
+
+        $htm = new HtmVue();
+
+        $this->voa = [$dct,$htm];
+
+    }
+
+}
+
+/**
  * Application Controller
  */
 class AppCtl extends Ctl
@@ -140,8 +165,12 @@ class AppCtl extends Ctl
         // create model to handle database operations
         $this->mdl = new AppMdl();
 
-        // test insertion
-        echo $this->mdl->poi();
+        // this is the parent
+        $this->osi = $this->mdl->poi();
+
+        $this->vue = new AppVueCtl();
+
+        echo $this->vue->htm();
 
     } // ./construct
 

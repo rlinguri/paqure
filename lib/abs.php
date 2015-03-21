@@ -276,7 +276,7 @@ abstract class Vue extends Obj
 
         if ($this->scl!=1) {
 
-            $htm .= '</'.$this->tag.'>'.PHP_EOL;
+            $htm .= '</'.$this->tag.'>'.N;
 
         }
 
