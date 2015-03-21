@@ -13,7 +13,8 @@ namespace paqure;
 /**
  * Object
  */
-abstract class Obj {
+abstract class Obj
+{
 
     // global properties and methods
 
@@ -33,6 +34,17 @@ abstract class Dbs extends Obj
 
     /* @property dbs message */
     protected $msg = [];
+
+    /**
+     * GETTER:  message
+     * @return  array
+     */
+    public function msg()
+    {
+
+        return $this->msg;
+
+    }
 
     /**
      * executeSQL
@@ -59,11 +71,40 @@ abstract class Dbs extends Obj
 
             return 0;
 
-        }
+        } // ./try-catch
 
-    } // ./try-catch
+    } // ./exeSQL()
 
-}
+    /**
+     * insert Record
+     * @param   str (sql query string)
+     * @return  int (lastInsertId)
+     */
+    public function insRec($arg)
+    {
+
+        try {
+
+            // prepare statement
+            $sth = $this->pch->prepare($arg);
+
+            // execute statement
+            $sth->execute();
+
+            // return last insert id
+            return $this->pch->lastInsertId();
+
+        } catch(\Exception $e) {
+
+            $this->msg[] = $e->getMessage();
+
+            return false;
+
+        } // ./try-catch
+
+    } // ./exeSQL()
+
+} // ./Dbs
 
 /**
  * Model
