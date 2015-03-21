@@ -37,7 +37,7 @@ class Inc
     } // ./inc()
 
 }
-// to load a file, place it in one of the directories required here
+// to load a file, place it in one of the directories required here or add a directory
 
 Inc::req(PQR_LIB,'conf');
 
