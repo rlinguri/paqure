@@ -37,7 +37,6 @@ Def::con('N',PHP_EOL);
 // root directory of library
 Def::con('PQR_LIB',substr(__FILE__,0,strlen(__FILE__)-13));
 
-Def::con('TIME_ZONE','America/Denver');
 
 // now load in all the other includes
 require_once(PQR_LIB.S.'conf'.S.'inc.php');
