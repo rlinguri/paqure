@@ -11,6 +11,53 @@
 namespace paqure;
 
 /**
+ * TestView
+ */
+class TstVue extends Vue
+{
+
+    /**
+     * just printing a var dump of the app object for testing
+     */
+    public function __construct()
+    {
+
+        $this->setXml('<pre>'.print_r(AppObj::obj(),true).'</pre>'.N);
+
+    }
+}
+
+/**
+ * Body View
+ */
+class BdyVue extends Vue
+{
+
+    public function __construct()
+    {
+        $this->tag = 'body';
+        $this->atr = ['role'=>'document'];
+        $this->cnt = [new TstVue()];
+        $this->scl = 0;
+    }
+
+}
+
+/**
+ * Head View
+ */
+class HedVue extends Vue
+{
+
+    public function __construct()
+    {
+        $this->tag = 'head';
+        $this->scl = 0;
+    }
+
+}
+
+/**
  * Html View
  */
 class HtmVue extends Vue
@@ -18,9 +65,12 @@ class HtmVue extends Vue
 
     public function __construct()
     {
+
         $this->tag = 'html';
         $this->atr = ['lang'=>'en'];
+        $this->cnt = [new HedVue(),new BdyVue()];
         $this->scl = 0;
+
     }
 
 }
