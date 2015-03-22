@@ -11,6 +11,73 @@
 namespace paqure;
 
 /**
+ * Application Object
+ */
+class AppObj extends Obj
+{
+
+    private static $obj;
+
+    protected $oid;
+    protected $tim;
+
+    public $prs;
+    public $qry;
+    public $rpl;
+
+    /**
+     * Initialize Object
+     * @param $oid
+     * @param $tim
+     */
+    public function ini($arg)
+    {
+
+        $this->oid = $arg[0];
+        $this->tim = $arg[1];
+
+    }
+
+    /**
+     * GETTER:  app object singleton
+     * @return  object
+     */
+    public static function obj()
+    {
+        if (!isset(self::$obj)) {
+
+            self::$obj = new self();
+        }
+
+        return self::$obj;
+
+    } //
+
+    /**
+     * GETTER:  object-set id
+     * @return  int
+     */
+    public function oid()
+    {
+
+        return $this->oid;
+
+    } // ./GETTER: object id
+
+    /**
+     * GETTER:  time
+     * @return  int (UTC time)
+     */
+    public function tim()
+    {
+
+        return $this->tim;
+
+    } // ./GETTER: time
+
+} // ./Application Object
+
+/**
  * Application Database
  */
 class AppDbs extends Dbs
@@ -78,9 +145,6 @@ class AppMdl extends Mdl
         // could be set dynamically
         $this->tbl = 'app';
 
-        // create a new record in app table to get an id
-        $this->poi = $this->newRec();
-
     } // ./construct
 
 
@@ -99,16 +163,20 @@ class AppMdl extends Mdl
      * new Record
      * @return int object id
      */
-    private function newRec()
+    public function newRec()
     {
 
+        // set the time
         $tim = intval(date('U'));
 
         // compose sql
-        $sql = "INSERT INTO $this->tbl (oid,tim) VALUES (NULL,$tim)";
+        $sql = 'INSERT INTO '.$this->tbl.' (oid,tim) VALUES (NULL,'.$tim.')';
 
-        // insRec returns lastInsertId
-        return $this->dbs->insRec($sql);
+        // set the parent object identifier to lastInsertId
+        $this->poi = $this->dbs->insRec($sql);
+
+        // provide the controller with the data needed to initialize the App Object
+        return [$this->poi,$tim];
 
     } // ./newRec()
 
@@ -162,14 +230,19 @@ class AppCtl extends Ctl
 
         date_default_timezone_set(TIME_ZONE);
 
-        // create model to handle database operations
+        // the model will create a new record in the app database and spawn an App Object Singleton
         $this->mdl = new AppMdl();
 
-        // this is the parent
-        $this->osi = $this->mdl->poi();
+        $obj = AppObj::obj();
 
+        $obj->ini($this->mdl->newRec());
+
+        // @todo Parse and Cue for Query or Reply
+
+        // call a view controller
         $this->vue = new AppVueCtl();
 
+        // output the html
         echo $this->vue->htm();
 
     } // ./construct
