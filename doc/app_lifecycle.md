@@ -20,7 +20,7 @@ The controller then instantiates the Application Object Singleton with:
 $obj = AppObj::obj();
 ```
 
-The singleton's **oid** (object identifier) and **tim** (time) properties are then populated with a callback to the Model's ini() method, which returns an array:
+The singleton's **oid** (object identifier) and **tim** (time) properties are then populated by the object's ini() method, passing in a callback to the Model's newRec() method, which inserts a new record into the app table and returns an array of the row's values:
 
 ```php
 $obj->ini($this->mdl->newRec());
