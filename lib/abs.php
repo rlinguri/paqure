@@ -67,7 +67,7 @@ abstract class Dbs extends Obj
 
         } catch(\Exception $e) {
 
-            $this->msg[] = $e->getMessage();
+            $this->msg[] = get_called_class($this).' exeSQL() '.$e->getMessage();
 
             return 0;
 
@@ -96,13 +96,42 @@ abstract class Dbs extends Obj
 
         } catch(\Exception $e) {
 
-            $this->msg[] = $e->getMessage();
+            $this->msg[] = get_called_class($this).' insRec() '.$e->getMessage();
 
             return false;
 
         } // ./try-catch
 
-    } // ./exeSQL()
+    } // ./insRec()
+
+    /**
+     * insert Record
+     * @param   str (sql query string)
+     * @return  int (lastInsertId)
+     */
+    public function ftcRec($arg)
+    {
+
+        try {
+
+            // prepare statement
+            $sth = $this->pch->prepare($arg);
+
+            // execute statement
+            $sth->execute();
+
+            // return last insert id
+            return $this->pch->fetch(PDO::FETCH_ASSOC);
+
+        } catch(\Exception $e) {
+
+            $this->msg[] = get_called_class($this).' ftcRec() '.$e->getMessage();
+
+            return false;
+
+        } // ./try-catch
+
+    } // ./insRec()
 
 } // ./Dbs
 
