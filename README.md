@@ -13,7 +13,7 @@ Define the time zone constant in **./app/cfg.php**. You can also set preferences
 ```php
 Inc::req('path/to/parent/','directory_name');
 ```
-_Note that your path will need to be split up into the parent directory and the directory that you wish to scan._ The framework will automatically include any files you place in the **'./app'** folder.
+__Note that your path will need to be split up into the parent directory and the directory that you wish to scan.__ The framework will automatically include any files you place in the **'./app'** folder.
 ---
 
 The framework uses the namespace **paqure**. To implement, include **./conf/def.php**.
