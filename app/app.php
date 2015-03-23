@@ -197,11 +197,14 @@ class AppVueCtl extends VueCtl
     public function __construct()
     {
 
-        $dct = new DctVue();
+        $lyt = new LytCtl();
 
-        $htm = new HtmVue();
+        foreach($lyt->getDOM(1,0) as $vue) {
 
-        $this->voa = [$dct,$htm];
+           // output the html
+           echo $vue->htm();
+
+        }
 
     }
 
@@ -241,9 +244,6 @@ class AppCtl extends Ctl
 
         // call a view controller
         $this->vue = new AppVueCtl();
-
-        // output the html
-        echo $this->vue->htm();
 
     } // ./construct
 
