@@ -105,7 +105,7 @@ abstract class Dbs extends Obj
     } // ./insRec()
 
     /**
-     * insert Record
+     * fetch Record
      * @param   str (sql query string)
      * @return  int (lastInsertId)
      */
@@ -120,8 +120,15 @@ abstract class Dbs extends Obj
             // execute statement
             $sth->execute();
 
-            // return last insert id
-            return $this->pch->fetch(PDO::FETCH_ASSOC);
+            if($sth) {
+
+                return $sth->fetch(\PDO::FETCH_ASSOC);
+
+            } else {
+
+                return false;
+
+            }
 
         } catch(\Exception $e) {
 
@@ -133,7 +140,46 @@ abstract class Dbs extends Obj
 
     } // ./insRec()
 
+    /**
+     * fetch Array of Records
+     * @param   str (sql query string)
+     * @return  int (lastInsertId)
+     */
+    public function ftcArr($arg)
+    {
+
+        try {
+
+            // prepare statement
+            $sth = $this->pch->prepare($arg);
+
+            // execute statement
+            $sth->execute();
+
+            if($sth) {
+
+                return $sth->fetchAll(\PDO::FETCH_ASSOC);
+
+            } else {
+
+                return false;
+
+            }
+
+
+        } catch(\Exception $e) {
+
+            $this->msg[] = get_called_class($this).' ftcArr() '.$e->getMessage();
+
+            return false;
+
+        } // ./try-catch
+
+    } // ./insRec()
+
+
 } // ./Dbs
+
 
 /**
  * Model
@@ -167,9 +213,16 @@ abstract class Mdl extends Obj
 
 /**
  * View
+ * A view object can be one of three types: 1) a DOM object, 2) a static XML object or 3) a group of view objects.
+ * A DOM object will render itself and any child objects set in $cnt as DOM elements, XML can only contain text,
+ * whereas a group of view objects will simply render in sequence without a parent. Groups are used so that elements
+ * can be added to the group after default construction.
  */
 abstract class Vue extends Obj
 {
+
+    /* @property vue html tag string */
+    protected $typ;
 
     /* @property vue html tag string */
     protected $tag;
@@ -181,30 +234,11 @@ abstract class Vue extends Obj
     protected $scl;
 
     /* @property vue content object */
-    protected $cnt;
+    public $cnt;
 
     /* @property vue xml string */
     protected $xml;
 
-
-    /**
-     * setter:  xml string
-     * @param   str
-     * @return  void
-     */
-    public function setXml($arg)
-    {
-
-        // set the xml property
-        $this->xml = $arg;
-
-        // void all other parameters
-        $this->tag = null;
-        $this->atr = null;
-        $this->scl = null;
-        $this->cnt = null;
-
-    } // ./setter
 
     /**
      * SETTER:  document object model
@@ -220,6 +254,47 @@ abstract class Vue extends Obj
 
         }
 
+        $this->xml = null;
+        $this->typ = 1;
+
+    }
+
+    /**
+     * setter:  xml string
+     * @param   str
+     * @return  void
+     */
+    public function setXml($arg)
+    {
+
+        // set the xml property
+        $this->xml = $arg;
+
+        // void all other parameters
+        $this->typ = 2;
+        $this->tag = null;
+        $this->atr = null;
+        $this->scl = null;
+        $this->cnt = null;
+
+    } // ./setter
+
+    /**
+     * SETTER:  set Content as group
+     * @param   simple array of view objects
+     * @return  void
+     */
+    public function setGrp($arg)
+    {
+
+        $this->typ = 3;
+        $this->tag = null;
+        $this->atr = null;
+        $this->scl = null;
+        $this->xml = null;
+
+        $this->cnt = $arg;
+
     }
 
     /**
@@ -230,14 +305,20 @@ abstract class Vue extends Obj
     public function htm()
     {
 
-        if (is_string($this->xml)) {
-
-            return $this->xml;
-
-        } else {
-
-            return $this->DOM();
-
+        switch($this->typ)
+        {
+            case 1:
+                return $this->DOM();
+                break;
+            case 2:
+                return $this->xml;
+                break;
+            case 3:
+                return $this->grp();
+                break;
+            default:
+                return null;
+                break;
         }
 
     } // ./GETTER: composed html
@@ -282,7 +363,7 @@ abstract class Vue extends Obj
             $htm = '<'.$this->tag;
 
             // add attributes
-            if (isset($this->atr)) {
+            if(isset($this->atr)) {
 
                 $htm .= $this->atr();
 
@@ -295,16 +376,14 @@ abstract class Vue extends Obj
 
         if (isset($this->cnt)) {
 
-            foreach($this->cnt as $subVue) {
-
-                $htm .= $subVue->htm();
-
-            }
+            $htm .= $this->grp();
 
         }
 
+        // if closing tag is necessary
         if ($this->scl!=1) {
 
+            // add it
             $htm .= '</'.$this->tag.'>'.N;
 
         }
@@ -312,6 +391,34 @@ abstract class Vue extends Obj
         return $htm;
 
     } // ./
+
+    /**
+     * Generate HTML for group of views
+     * @return string
+     */
+    protected function grp()
+    {
+
+        $htm = '';
+
+        // make sure we are iterating over array
+        if(is_array($this->cnt)) {
+
+            foreach($this->cnt as $vue) {
+
+                // make sure it's an object
+                if (is_object($vue)) {
+
+                    $htm .= $vue->htm();
+
+                } // ./if object
+
+            } // ./foreach
+
+        } // ./if array
+
+        return $htm;
+    }
 
 } // ./View
 
@@ -365,7 +472,7 @@ abstract class VueCtl extends Ctl
 
         $htm = '';
 
-        foreach ($this->voa as $vue) {
+        foreach($this->voa as $vue) {
 
             $htm .= $vue->htm();
 
